@@ -1,0 +1,27 @@
+{
+  "apartados_modificados": [
+    [
+      1,
+      "13"
+    ],
+    [
+      1,
+      "14"
+    ],
+    [
+      2,
+      "7a"
+    ],
+    [
+      2,
+      "7b"
+    ],
+    [
+      2,
+      "7c"
+    ]
+  ],
+  "identificador_icmp": 28418,
+  "pc1_mac_local": "52:96:cd:cd:f7:9b",
+  "pc4_mac_local": "e2:db:48:cf:ad:01"
+}

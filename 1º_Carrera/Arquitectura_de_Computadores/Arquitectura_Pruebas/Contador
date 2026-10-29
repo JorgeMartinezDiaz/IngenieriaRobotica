@@ -1,0 +1,24 @@
+#-- Contador infinito
+
+#-- Constantes:
+	
+	.eqv INICIO 1OO
+	.eqv INC 10
+	
+	.data 
+	
+contador:	.word 0
+
+#-- Programa:
+	
+	.text
+	
+	li t0, INICIO  #-- t0 es el contador 
+	la t1, contador #-- Puntero
+	
+bucle:
+	sw t0, 0(t1) #-- Almacenamiento
+	
+	addi, t0, t0, INC #-- Incremento
+	
+	j bucle

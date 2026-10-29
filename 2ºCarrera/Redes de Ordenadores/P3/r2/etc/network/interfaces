@@ -1,0 +1,22 @@
+######################################################################
+# /etc/network/interfaces -- configuration file for ifup(8), ifdown(8)
+
+auto lo
+iface lo inet loopback
+
+auto eth0
+iface eth0 inet static
+     address 201.72.0.2
+     netmask 255.255.255.0
+
+
+auto eth1
+iface eth1 inet static
+     address 202.72.0.2
+     netmask 255.255.255.0
+
+auto eth2
+iface eth2 inet static
+     address 203.72.0.2
+     netmask 255.255.255.0
+

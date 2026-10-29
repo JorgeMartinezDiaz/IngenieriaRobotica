@@ -1,0 +1,389 @@
+﻿GUION PARA REALIZAR LA PRÁCTICA 3 Y OBTENER LAS CAPTURAS
+X = 72 | pc1 = 200.72.0.10/24
+
+Este guion se sigue en orden. Los comandos de las máquinas se escriben en las consolas Linux de NetGUI, no en PowerShell de Windows. Si se solicita un editor, se puede utilizar nano /etc/network/interfaces. Guardar con Ctrl+O, Intro y salir con Ctrl+X.
+
+El guion describe las operaciones pendientes de realizar. No se han ejecutado los dispositivos ni verificado los paquetes en Wireshark. Los valores indicados como esperados son previsiones.
+
+Se generan once ficheros de tráfico .cap para la entrega. Registrar por escrito los campos observados y completar con ellos la memoria.
+
+0. PREPARACIÓN Y GUARDADO DE ARCHIVOS
+
+Abrir en NetGUI el escenario p3-lab. Para el bloque 1 arrancar solo pc1, pc4, pc2 y r3; mantener r1, r2 y pc3 apagados.
+
+Direcciones:
+pc1 eth0 200.72.0.10/24 (se configura en el paso 1).
+pc4 eth0 200.72.0.40/24.
+pc2 eth0 202.72.0.20/24.
+r3 eth0 200.72.0.3/24; eth1 202.72.0.3/24.
+r1 eth0 200.72.0.1/24; eth1 201.72.0.1/24.
+r2 eth0 201.72.0.2/24; eth1 202.72.0.2/24; eth2 203.72.0.2/24.
+pc3 eth0 203.72.0.30/24.
+
+Los comandos de tcpdump guardarán en /tmp de cada máquina virtual. Copiar los .cap a la máquina real antes de reiniciar o cerrar el escenario.
+
+Comprobar la carpeta compartida disponible desde una máquina virtual:
+    ls -ld /hostlab /hosthome
+    mount
+
+Si /hostlab está montada y corresponde al escenario abierto, crear:
+    mkdir -p /hostlab/p3
+
+Los ejemplos de copia de este guion utilizan /hostlab/p3. Si el entorno comparte otra ruta, sustituirla por la ruta compartida comprobada. No crear /hostlab a ciegas: una carpeta local de la máquina virtual no exporta archivos al equipo real. Si se usa /hosthome, elegir dentro la carpeta del escenario y su subcarpeta p3.
+
+Utilizar Wireshark en la máquina real para abrir los archivos ya exportados. No es necesario abrirlos dentro de cada máquina virtual.
+
+1. BLOQUE A: IP Y RUTAS TEMPORALES
+
+Paso 1. Estado inicial de pc1. Memoria 1, preguntas 1-3.
+En pc1, antes de configurar eth0:
+    ping -c 2 127.0.0.1
+    route -n
+
+Comprobar las respuestas del loopback y la tabla inicial de pc1.
+Mostrar las respuestas del loopback y la tabla inicial.
+
+Consultar la máscara en pc4 con ifconfig eth0. En pc1 editar /etc/network/interfaces para que contenga:
+
+auto lo
+iface lo inet loopback
+
+auto eth0
+iface eth0 inet static
+    address 200.72.0.10
+    netmask 255.255.255.0
+
+En pc1:
+    ifup eth0
+    cat /etc/network/interfaces
+    ifconfig eth0
+
+Si eth0 ya estaba activa, aplicar con ifdown eth0 y después ifup eth0. No añadir aún gateway.
+
+Comprobar el contenido de interfaces y la IP aplicada en pc1.
+
+En pc1:
+    route -n
+
+Comprobar la ruta directa 200.72.0.0/24 por eth0, sin gateway.
+
+Paso 2. Tablas de los vecinos. Memoria 1, preguntas 4-5.
+En pc2, pc4 y r3, ejecutar en cada consola:
+    route -n
+
+Comprobar las tablas de pc2 y pc4.
+Comprobar las dos rutas directas de r3: 200.72.0.0/24 y 202.72.0.0/24.
+
+En r3 comprobar:
+    sysctl net.ipv4.ip_forward
+Si da 0, activar para la sesión:
+    sysctl -w net.ipv4.ip_forward=1
+
+Paso 3. Pings sin ruta por defecto. Memoria 1, preguntas 6-7.
+En pc1:
+    ping -c 2 200.72.0.40
+    ping -c 2 200.72.0.3
+
+Comprobar que ambos ping a los vecinos responden.
+
+Todavía en pc1:
+    ping -c 2 202.72.0.20
+    ping -c 2 202.72.0.3
+
+Comprobar los fallos de los dos ping sin ruta hacia 202.72.0.0/24.
+
+Paso 4. Añadir solo el gateway de pc1. Memoria 1, preguntas 8-10.
+En pc1:
+    route add default gw 200.72.0.3
+    route -n
+
+Comprobar la entrada default/0.0.0.0 vía 200.72.0.3.
+
+En pc1:
+    ping -c 2 202.72.0.3
+
+Comprobar que responde el ping a la otra interfaz de r3.
+
+En pc1:
+    ping -c 2 -W 2 202.72.0.20
+En pc2:
+    route -n
+
+Comprobar el fallo del ping y la ausencia de ruta de retorno en pc2.
+No añadir el gateway de pc2 hasta haber comprobado este fallo.
+
+Paso 5. Completar las rutas de retorno. Memoria 1, preguntas 11-12.
+En pc2:
+    route add default gw 202.72.0.3
+    route -n
+En pc4:
+    route add default gw 200.72.0.3
+    route -n
+En pc1:
+    ping -c 2 202.72.0.20
+En pc4:
+    ping -c 2 202.72.0.20
+
+Comprobar los gateways de pc2 y pc4 y los dos ping a pc2.
+
+En pc2:
+    ping -c 2 200.72.0.10
+    ping -c 2 200.72.0.40
+
+Comprobar ambos ping iniciados en pc2.
+
+2. BLOQUE A: PRIMERA CAPTURA, PC1 -> PC4
+
+Paso 6. Vaciar ARP. Memoria 1, pregunta 13.
+En pc1, pc4, pc2 y r3 consultar:
+    arp -n
+
+Para cada IP que aparezca, ejecutar en esa misma máquina:
+    arp -d DIRECCION_IP
+
+Volver a consultar arp -n. Repetir si quedan asociaciones completas; también se puede esperar a que caduquen. No generar pings entre el borrado y el inicio de la prueba.
+
+Paso 7. Guardar p3-a-01.cap.
+En pc4:
+    tcpdump -i eth0 -n -s 0 -w /tmp/p3-a-01.cap
+
+Dejar esa consola capturando. En pc1:
+    ping -c 1 200.72.0.40
+
+En cuanto termine, volver a pc4 y pulsar Ctrl+C. Detener solo tcpdump en pc4.
+
+Consultar inmediatamente arp -n en pc1, pc4, pc2 y r3.
+Anotar el contenido de las cuatro cachés después del ping local.
+Esperado: pc1 conoce pc4 y pc4 conoce pc1; no hay asociaciones necesarias nuevas en pc2 ni r3.
+
+En pc4, exportar:
+    cp /tmp/p3-a-01.cap /hostlab/p3/
+
+Paso 8. Análisis en Wireshark. Memoria 1, pregunta 14.
+Abrir p3-a-01.cap en Wireshark. Filtro de visualización:
+    arp || icmp
+
+Analizar la solicitud y la respuesta ARP:
+- Solicitud ARP: desplegar Ethernet II y Address Resolution Protocol. Mostrar MAC origen, ff:ff:ff:ff:ff:ff, tipo 0x0806 y Target IP address = 200.72.0.40.
+- Respuesta ARP: mostrar las MAC, tipo 0x0806 y Sender MAC address de pc4.
+
+Analizar Echo request y Echo reply. Desplegar Ethernet II, Internet Protocol Version 4 e ICMP. Anotar las MAC, las IP de origen y destino, el tipo 0x0800 y Time to live.
+
+Anotar las MAC reales de pc1 y pc4 para sustituir M1 y M4 en la memoria.
+
+3. BLOQUE A: DOS CAPTURAS, PC1 -> PC2
+
+Paso 9. Preparar ARP y lanzar las dos capturas. Memoria 1, preguntas 15-16.
+Para obtener todos los ARP sin depender de la prueba anterior, vaciar las asociaciones completas en pc1, pc2, pc4 y r3 con arp -n y arp -d DIRECCION_IP. Así pc4 debería quedar vacío también al final.
+
+En r3:
+    tcpdump -i eth0 -n -s 0 -w /tmp/p3-a-02.cap
+En pc2:
+    tcpdump -i eth0 -n -s 0 -w /tmp/p3-a-03.cap
+
+Esperar a que ambas consolas indiquen que están capturando. En pc1:
+    ping -c 1 202.72.0.20
+
+Detener ambos tcpdump con Ctrl+C, cada uno en su consola. Consultar arp -n en pc1, pc2, pc4 y r3.
+
+Anotar las cuatro cachés después del ping remoto.
+pc1 debe asociar 200.72.0.3; pc2, 202.72.0.3; r3 debe conocer pc1 por eth0 y pc2 por eth1. pc4 no necesita aprender nuevas MAC.
+
+Exportar antes de reiniciar:
+En r3:
+    cp /tmp/p3-a-02.cap /hostlab/p3/
+En pc2:
+    cp /tmp/p3-a-03.cap /hostlab/p3/
+
+Paso 10. Comparar en Wireshark.
+Abrir p3-a-02.cap y p3-a-03.cap en dos ventanas. Usar el filtro:
+    arp || icmp
+
+Comparar en ambas capturas los siguientes paquetes y campos:
+- La misma petición en ambas capturas: mismas IP, identificadores IP e ICMP; MAC diferentes y TTL 64 frente a 63.
+- La misma respuesta en ambas: IP invertidas, MAC diferentes y TTL 64 en pc2 frente a 63 al salir de r3 hacia pc1.
+- Los ARP de cada segmento: consulta por 200.72.0.3 en el primero y por 202.72.0.20 en el segundo; mostrar MAC, tipo 0x0806 y campos ARP.
+
+Identificar las MAC de r3(eth0), r3(eth1) y pc2 para completar R30, R31 y M2. No esperar que pc1 resuelva por ARP la IP remota de pc2.
+
+4. BLOQUE B: RUTAS PERSISTENTES
+
+Paso 11. Arrancar todo el escenario. Memoria 2, preguntas 1-2.
+Comprobar que las tres capturas anteriores están en la máquina real. Arrancar r1, r2 y pc3, manteniendo el resto de máquinas.
+
+Revisar el diagrama y comprobar las IP de todas las interfaces con ifconfig, incluida 200.72.0.10 de pc1.
+
+Reiniciar pc1, pc2 y pc4 desde NetGUI. No usar reset-lab, porque se quiere conservar la IP guardada de pc1.
+
+En todas las máquinas, incluidos los tres routers:
+    route -n
+
+Comprobar las tablas de pc1, pc2, pc3, pc4, r1, r2 y r3 después del reinicio; no deberían conservar las rutas temporales del bloque A.
+
+Paso 12. Editar los ficheros. Memoria 2, pregunta 3.
+En cada máquina abrir /etc/network/interfaces. Mantener auto lo, las IP y sus máscaras. Añadir estas líneas indentadas en el bloque que se indica:
+
+PC1, dentro de iface eth0 inet static:
+    gateway 200.72.0.3
+    up route add -net 203.72.0.0 netmask 255.255.255.0 gw 200.72.0.1
+    down route del -net 203.72.0.0 netmask 255.255.255.0 gw 200.72.0.1
+
+PC2, dentro de iface eth0 inet static:
+    gateway 202.72.0.3
+    up route add -net 203.72.0.0 netmask 255.255.255.0 gw 202.72.0.2
+    down route del -net 203.72.0.0 netmask 255.255.255.0 gw 202.72.0.2
+
+PC3, dentro de iface eth0 inet static:
+    gateway 203.72.0.2
+
+R1, dentro de iface eth1 inet static:
+    up route add -net 203.72.0.0 netmask 255.255.255.0 gw 201.72.0.2
+    down route del -net 203.72.0.0 netmask 255.255.255.0 gw 201.72.0.2
+
+R2, dentro de iface eth1 inet static:
+    up route add -net 200.72.0.0 netmask 255.255.255.0 gw 202.72.0.3
+    down route del -net 200.72.0.0 netmask 255.255.255.0 gw 202.72.0.3
+
+No añadir rutas en r3: sus dos redes conectadas bastan. No añadirle una ruta hacia 203.72.0.0/24, porque cambiaría la situación de los asteriscos que estudia el enunciado.
+
+Revisar con cat /etc/network/interfaces los ficheros de pc1, pc2, pc3, r1 y r2.
+
+Reiniciar las máquinas modificadas para aplicar la configuración desde cero. En r1, r2 y r3 consultar sysctl net.ipv4.ip_forward y, si vale 0, ejecutar sysctl -w net.ipv4.ip_forward=1. Consultar route -n en todos los participantes antes de los ping.
+
+Paso 13. Verificar conectividad y caminos por las tablas.
+En pc1:
+    ping -c 3 202.72.0.20
+En pc2:
+    ping -c 3 203.72.0.30
+En pc1:
+    ping -c 3 203.72.0.30
+
+Comprobar los tres ping y justificar mediante las tablas los siguientes saltos en ambos sentidos:
+3a: pc1 a pc2 usa default por 200.72.0.3; r3 tiene ruta directa a pc2. pc2 vuelve por 202.72.0.3; r3 tiene ruta directa a pc1.
+3b: pc2 a pc3 usa la ruta 203.72.0.0/24 por 202.72.0.2; r2 tiene ruta directa a pc3. pc3 vuelve por 203.72.0.2; r2 alcanza pc2 directamente.
+3c: pc1 a pc3 usa 200.72.0.1; r1 usa 201.72.0.2; r2 alcanza pc3 directamente. pc3 vuelve por r2; r2 usa 202.72.0.3 para alcanzar 200.72.0.0/24; r3 llega directamente a pc1.
+
+Paso 14. Traceroute en los dos sentidos. Memoria 2, preguntas 4-6.
+Usar traceroute UDP normal; no añadir -I ni -T. Mantener tres sondas por salto.
+
+En pc1: traceroute -n 202.72.0.20
+En pc2: traceroute -n 200.72.0.10
+Resultado esperado: ambos recorridos pasan por r3.
+
+En pc2: traceroute -n 203.72.0.30
+En pc3: traceroute -n 202.72.0.20
+Resultado esperado: ambos recorridos pasan por r2.
+
+En pc1: traceroute -n 203.72.0.30
+En pc3: traceroute -n 200.72.0.10
+Resultado esperado: ida por r1 y r2; vuelta por r2 y r3. Puede aparecer * * * en el salto de r3 de la vuelta. Esperar a que termine el comando y anotar los saltos.
+
+5. BLOQUE B: CUATRO CAPTURAS DEL PING
+
+Paso 15. Arrancar los cuatro tcpdump. Memoria 2, pregunta 7.
+En r1:
+    tcpdump -i eth0 -n -s 0 -w /tmp/p3-b-01.cap
+En r2:
+    tcpdump -i eth0 -n -s 0 -w /tmp/p3-b-02.cap
+En r3:
+    tcpdump -i eth1 -n -s 0 -w /tmp/p3-b-03.cap
+En pc3:
+    tcpdump -i eth0 -n -s 0 -w /tmp/p3-b-04.cap
+
+No usar -p: interesa mantener la captura promiscua para ver también las tramas del hub compartido. Una vez iniciadas las cuatro, en pc1:
+    ping -c 2 203.72.0.30
+
+Al terminar, detener los cuatro tcpdump con Ctrl+C, en sus respectivas consolas. Exportar:
+En r1: cp /tmp/p3-b-01.cap /hostlab/p3/
+En r2: cp /tmp/p3-b-02.cap /hostlab/p3/
+En r3: cp /tmp/p3-b-03.cap /hostlab/p3/
+En pc3: cp /tmp/p3-b-04.cap /hostlab/p3/
+
+Paso 16. Análisis de IP, ICMP y TTL.
+En Wireshark abrir p3-b-04.cap y filtrar:
+    icmp.type == 8 || icmp.type == 0
+
+Analizar una petición y una respuesta con IP e ICMP desplegados. Anotar IP origen/destino, Protocolo = 1, tipo 8 o 0 y código 0.
+
+Para comparar TTL, desplegar IP, pulsar con el botón derecho sobre Time to live y elegir Aplicar como columna/Apply as Column. Mantener visibles Source, Destination e Info. Repetir el filtro ICMP en las cuatro capturas.
+
+Comparar las cuatro capturas p3-b-01 a p3-b-04. Con TTL inicial 64, los valores esperados son:
+p3-b-01: dos peticiones TTL 64 y dos respuestas TTL 62.
+p3-b-02: dos peticiones TTL 63.
+p3-b-03: dos respuestas TTL 63.
+p3-b-04: dos peticiones TTL 62 y dos respuestas TTL 64.
+
+r1 ve las respuestas en hub1 aunque no las reenvía. Si un valor difiere, registrar el valor real y revisar el TTL inicial y las rutas antes de modificar la explicación.
+
+6. BLOQUE B: CUATRO CAPTURAS DEL TRACEROUTE
+
+Paso 17. Usar ficheros nuevos. Memoria 2, pregunta 8.
+En r1:
+    tcpdump -i eth0 -n -s 0 -w /tmp/p3-b-05.cap
+En r2:
+    tcpdump -i eth0 -n -s 0 -w /tmp/p3-b-06.cap
+En r3:
+    tcpdump -i eth1 -n -s 0 -w /tmp/p3-b-07.cap
+En pc3:
+    tcpdump -i eth0 -n -s 0 -w /tmp/p3-b-08.cap
+
+Con las cuatro capturas activas, ejecutar en pc1:
+    traceroute -n 203.72.0.30
+
+Anotar la salida completa. Se esperan como saltos r1, r2 y pc3.
+Cuando termine por completo, detener los cuatro tcpdump con Ctrl+C. Exportar:
+En r1: cp /tmp/p3-b-05.cap /hostlab/p3/
+En r2: cp /tmp/p3-b-06.cap /hostlab/p3/
+En r3: cp /tmp/p3-b-07.cap /hostlab/p3/
+En pc3: cp /tmp/p3-b-08.cap /hostlab/p3/
+
+Paso 18. Identificar las nueve sondas UDP. Memoria 2, preguntas 9 y 10a.
+Abrir p3-b-05.cap. Filtro:
+    udp && ip.src == 200.72.0.10 && ip.dst == 203.72.0.30
+
+Añadir TTL como columna. Deben verse tres sondas con TTL 1, tres con TTL 2 y tres con TTL 3. En p3-b-06.cap se ven las de TTL inicial 2 y 3 con TTL reducido a 1 y 2. En p3-b-08.cap llegan las de TTL inicial 3 con TTL 1.
+
+Comprobar esos tres grupos en p3-b-05 y su progresión en p3-b-06 y p3-b-08. Anotar el TTL de cada sonda. Distinguir el TTL inicial del que tiene después de atravesar cada router.
+
+Paso 19. Identificar los nueve errores ICMP. Memoria 2, preguntas 9 y 10b-10d.
+En p3-b-05.cap usar:
+    icmp.type == 11 && icmp.code == 0
+Localizar las tres respuestas de r1 y las tres de r2. Desplegar la cabecera IP exterior e ICMP; dentro del error aparece otra cabecera IP que corresponde a la sonda original.
+
+ICMP de r1 (preguntas 9 y 10b): localizar los tres errores y analizar uno con IP origen esperada 200.72.0.1, destino 200.72.0.10 y tipo 11/código 0.
+
+ICMP de r2 (preguntas 9 y 10c): localizar el mismo error en p3-b-07 y p3-b-05. IP origen esperada 202.72.0.2 y destino 200.72.0.10. La presencia en ambos segmentos y las MAC de r3 permiten justificar el regreso por r3. Anotar la IP origen real si el sistema elige otra.
+
+En p3-b-08.cap usar:
+    icmp.type == 3 && icmp.code == 3
+
+ICMP de pc3 (preguntas 9 y 10d): localizar los tres errores de puerto inalcanzable. Analizar uno con origen 203.72.0.30, destino 200.72.0.10 y tipo 3/código 3. Identificar el mismo mensaje en p3-b-07 y p3-b-05 para comprobar pc3 -> r2 -> r3 -> pc1.
+
+7. REVISIÓN DE LOS ONCE FICHEROS Y ENTREGA
+
+En la máquina real, la carpeta p3 debe contener exactamente las once capturas solicitadas:
+
+Archivo | Se captura en | Tráfico que lo genera
+p3-a-01.cap | pc4 eth0 | pc1: ping -c 1 200.72.0.40
+p3-a-02.cap | r3 eth0 | pc1: ping -c 1 202.72.0.20
+p3-a-03.cap | pc2 eth0 | El mismo ping anterior
+p3-b-01.cap | r1 eth0 | pc1: ping -c 2 203.72.0.30
+p3-b-02.cap | r2 eth0 | El mismo ping anterior
+p3-b-03.cap | r3 eth1 | El mismo ping anterior
+p3-b-04.cap | pc3 eth0 | El mismo ping anterior
+p3-b-05.cap | r1 eth0 | pc1: traceroute -n 203.72.0.30
+p3-b-06.cap | r2 eth0 | El mismo traceroute anterior
+p3-b-07.cap | r3 eth1 | El mismo traceroute anterior
+p3-b-08.cap | pc3 eth0 | El mismo traceroute anterior
+
+Abrir todos los .cap para comprobar que contienen los mensajes esperados, no solo ARP. Si falta un archivo de una tanda simultánea, repetir la tanda completa con todas las capturas activas.
+
+Desde la terminal Linux de la máquina real, situarse en la carpeta que contiene p3 y ejecutar:
+    zip -r p3.zip p3
+
+En Windows, desde la carpeta que contiene p3, el equivalente es:
+    Compress-Archive -Path .\p3 -DestinationPath .\p3.zip
+
+Comprobar que dentro del ZIP aparece p3/ y debajo los once .cap. No incluir discos de las máquinas virtuales.
+
+Completar en Memoria_Laboratorio_3_X72.txt las MAC reales y corregir los TTL, la IP de origen y cualquier resultado que difiera de lo previsto. Guardar la memoria final como PDF después de realizar y comprobar las pruebas.

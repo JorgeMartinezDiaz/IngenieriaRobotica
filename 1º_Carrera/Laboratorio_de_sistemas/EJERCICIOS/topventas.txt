@@ -1,0 +1,46 @@
+Promedio de ventas por producto
+
+-------------------------------
+
+RobotMovilA1 138,833333
+BrazoRoboticoX2 96,666667
+DroneAutonomoD5 215,833333
+SensorTemperaturaT100 313,333333
+SensorHumedadH200 163,333333
+CamaraInteligenteC300 237,500000
+RobotLimpiezaR1 142,500000
+RobotIndustrialIR7 102,500000
+KitRobotEducativoK10 183,333333
+ModuloWiFiESP32 525,000000
+ModuloBluetoothBT5 222,500000
+GatewayIoTG1 203,333333
+SensorMovimientoM50 153,333333
+SensorLuzL20 122,500000
+ActuadorLinealA9 107,500000
+ServoMotorS300 173,333333
+ControladorPLCCompacto 263,333333
+RobotAgricolaAG8 193,333333
+DroneEntregaDX1 245,000000
+EstacionMeteorologicaIoT 188,333333
+SensorGasG10 158,333333
+RobotAsistenteRA2 225,000000
+CamaraTermicaCT1 273,333333
+ModuloLoRaL100 208,333333
+SensorPresionP5 148,333333
+RobotExploradorRE3 168,333333
+PlataformaRoboticaPR2 218,333333
+KitDomoticaKD1 198,333333
+HubIoTH1 253,333333
+SensorProximidadSP1 137,500000
+
+Producto: ModuloWiFiESP32
+Mes: Mes6
+Unidades: 550
+
+Filtrado con grep:
+
+RobotLimpiezaR1 130 140 135 145 150 155
+RobotIndustrialIR7 90 100 95 105 110 115
+DroneEntregaDX1 230 240 235 245 255 265
+RobotAsistenteRA2 210 220 215 225 235 245
+RobotExploradorRE3 155 165 160 170 175 185

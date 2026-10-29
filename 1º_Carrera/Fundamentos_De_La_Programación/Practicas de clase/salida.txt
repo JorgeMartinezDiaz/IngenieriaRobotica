@@ -1,0 +1,8 @@
+* * * * * 
+* # * * * 
+* * * # . 
+R * * * # 
+* * * * . 
+Celdas recorridas: 19
+Celdas libres: 3
+

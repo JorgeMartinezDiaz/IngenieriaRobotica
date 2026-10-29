@@ -1,0 +1,60 @@
+#-- Almacenando el valor de cada numero para mostrarlo por el Display derecgho
+#-- Que previamente estaran almacenados como palabras en una tablas.
+
+	.include "servicios.asm"
+	
+#-- Variables:
+	#-- Incrementos
+	
+	.eqv E1 0
+	.eqv E2 4
+	.eqv E3 8
+	.eqv E4 0xC
+	
+	#-- DISPLAY DERECHO
+	
+	.eqv DISP_D 0xFFFF0010
+	
+	#-- Valores Digitos:
+	
+	.eqv DIG1 0x06
+	.eqv DIG2 0x5B
+	.eqv DIG3 0x4F
+	.eqv DIG4 0x66
+	
+	.data
+ 
+tabla: .word DIG1, DIG2, DIG3, DIG4
+
+	#--Codigo
+	
+	.text
+	
+	la t0, tabla
+	li t1, DISP_D
+	
+	#--Mostrar digitos en manera ascendente
+	#-- DIG1
+	
+	lw a0, E1(t0)
+	sw a0, 0(t1)
+	
+	#-- DIG2
+	
+	lw a0, E2(t0)
+	sw a0, 0(t1)
+	
+	#-- DIG3
+	
+	lw a0, E3(t0)
+	sw a0, 0(t1)
+	
+	#-- DIG4
+	
+	lw a0, E4(t0)
+	sw a0, 0(t1)
+	
+	#-- Terminar
+	
+	li a7, EXIT
+	ecall

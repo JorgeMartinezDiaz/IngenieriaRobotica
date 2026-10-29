@@ -1,0 +1,42 @@
+#-- Programa para calcular la expresión
+#-- f = (a+b+c) - [(d - a) + (e + 3) -30]
+
+	.include "servicios.asm"
+	
+	.data 
+	
+	.eqv VAL_a 2
+	.eqv VAL_b 4
+	.eqv VAL_c 6
+	.eqv VAL_d 8
+	.eqv VAL_e 10
+
+#-- Programa principal:
+
+	.text 
+	
+	#-- Inicializar las variables:
+	
+	li t0, VAL_a
+	li t1, VAL_b
+	li t2, VAL_c
+	li t3, VAL_d
+	li t4, VAL_e
+	li t5, 0
+	
+	#-- Operaciones:
+	add s0, t0, t1
+	add s0, s0, t2 #-- En s0 esta (a+b+c)
+	
+	sub s1, t3, t0 #-- En s1 esta (d-a)
+	
+	addi t4, t4, 3 #-- (e+3)
+	
+	add a1, s1, t4 #-- En a1 esta (d - a) + (e + 3)
+	
+	addi a2, a1, -30 #-- En a2 esta [(d - a) + (e + 3) -30]
+	
+	sub t5, s0, a2
+	
+	li a7, EXIT
+	ecall

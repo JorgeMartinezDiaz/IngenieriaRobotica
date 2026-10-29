@@ -1,0 +1,45 @@
+#-- Calcaular la expresión f = (a + b + c) - (d - 3)
+#-- Utilizaremos el registro tp como puntero a las variables
+
+	.include "servicios.asm"
+#-- Variables:
+	.data
+	
+VAL_A:	.word -5
+VAL_B:	.word 2
+VAL_C:	.word 30
+VAL_D:	.word 5
+RESULTADO:	.word 0
+
+#-- Programa:
+	
+	.text
+	
+	la tp, VAL_A
+	
+	#-- Cargamos los registros apartir del puntero tp.
+	
+	lw t0, 0(tp)  #-- x5 = a
+	lw t1, 4(tp)  #-- x6 = b
+	lw t2, 8(tp)  #-- x7 = c
+	lw s0, 12(tp) #-- x8 = d
+	
+	#-------------- Calcular la expresión
+	add s1, t0, t1  #-- x9 = a + b
+	add s1, s1, t2  #-- x9 = a + b + c
+	addi a0, s0, -3  #-- x10 = d - 3
+	sub a2, s1, a0  #-- x12 = (a + b + c) - (d - 3)
+	
+	sw a2, 16(tp)
+	
+	mv a0, a2
+	
+	#-- Imprimir el resultado
+	
+	li a7, PRINT_INT
+	ecall
+	
+	#-- Terminar
+	
+	li a7, EXIT
+	ecall

@@ -1,0 +1,10 @@
+Repositorio recetario-lsis:
+https://github.com/JorgeMartinezDiaz/recetario-lsis.git
+
+Repositorio recetario-lsis-backup:
+https://github.com/JorgeMartinezDiaz/recetario-lsis-backup.git
+
+Repositorio Biblioteca:
+https://github.com/JorgeMartinezDiaz/Biblioteca.git
+
+

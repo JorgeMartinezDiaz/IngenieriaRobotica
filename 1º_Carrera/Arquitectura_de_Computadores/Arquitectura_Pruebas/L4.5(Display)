@@ -1,0 +1,21 @@
+#-- Modificaxión del ejercicio 1
+#-- Ahora la salida es por el display derecho
+#-- Constantes:
+	
+	.eqv INICIO 0
+	.eqv INC 1
+	.eqv DISPLAY 0xFFFF0010
+
+#-- Programa:
+	
+	.text
+	
+	li t0, INICIO  #-- t0 es el contador 
+	li t1, DISPLAY  #-- Puntero
+	
+bucle:
+	sw t0, 0(t1) #-- Almacenamiento
+	
+	addi, t0, t0, INC #-- Incremento
+	
+	j bucle

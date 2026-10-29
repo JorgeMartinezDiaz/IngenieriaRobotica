@@ -1,0 +1,14 @@
+#--- Hacer un programa que realiza la suma de numeros enteros
+	
+	.text
+	
+	#-- Inicializar  las variables t0 que será la que aumento
+	#-- y t1 que sera en la que se almacene la suma.
+	li t0, 0
+	li t1, 0
+	
+bucle:
+	addi t0, t0, 2
+	add t1, t1, t0
+	
+	j bucle

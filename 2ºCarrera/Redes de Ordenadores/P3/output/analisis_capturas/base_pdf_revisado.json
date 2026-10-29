@@ -1,0 +1,947 @@
+[
+  {
+    "kind": "title",
+    "text": "Memoria Laboratorio 3",
+    "top": 73.79882809499998,
+    "bottom": 85.79882809499998,
+    "page": 1,
+    "section": 0
+  },
+  {
+    "kind": "metadata",
+    "text": "Alumno: Jorge Martínez Díaz",
+    "top": 103.29785184452146,
+    "bottom": 113.29785159452149,
+    "page": 1,
+    "section": 0
+  },
+  {
+    "kind": "metadata",
+    "text": "Asignatura: Fundamentos de Redes de Ordenadores",
+    "top": 120.79687584452154,
+    "bottom": 130.79687559452157,
+    "page": 1,
+    "section": 0
+  },
+  {
+    "kind": "metadata",
+    "text": "Fecha: 26/10/2026",
+    "top": 138.2958988445215,
+    "bottom": 148.29589859452153,
+    "page": 1,
+    "section": 0
+  },
+  {
+    "kind": "section",
+    "text": "1. Configuración de tablas de encaminamiento con route.",
+    "top": 176.59374809500002,
+    "bottom": 188.59374809500002,
+    "page": 1,
+    "section": 1
+  },
+  {
+    "kind": "question",
+    "text": "Pregunta 1. Ping a 127.0.0.1:",
+    "top": 197.0927738445215,
+    "bottom": 207.09277359452153,
+    "page": 1,
+    "section": 1,
+    "question": "1"
+  },
+  {
+    "kind": "body",
+    "text": "Responde porque 127.0.0.1 pertenece a la interfaz de loopback, lo, que ya está configurada. No necesita una IP en Ethernet. Inicialmente, route -n no muestra rutas hacia otras máquinas; Linux gestiona el loopback en su tabla local.",
+    "top": 215.59179384452148,
+    "bottom": 248.5898404695215,
+    "page": 1,
+    "section": 1
+  },
+  {
+    "kind": "question",
+    "text": "Pregunta 3. Tabla de pc1 después de configurar la IP:",
+    "top": 256.0888638445215,
+    "bottom": 266.0888635945215,
+    "page": 1,
+    "section": 1,
+    "question": "3"
+  },
+  {
+    "kind": "body",
+    "text": "Se añade automáticamente la ruta 200.72.0.0/24 por eth0, sin gateway. Con ella puede enviar a los vecinos de su subred: pc4 y r3(eth0), entre las máquinas encendidas.",
+    "top": 274.58789384452155,
+    "bottom": 296.0869172195215,
+    "page": 1,
+    "section": 1
+  },
+  {
+    "kind": "question",
+    "text": "Pregunta 4. Tablas de pc2 y pc4:",
+    "top": 303.5859338445215,
+    "bottom": 313.5859335945215,
+    "page": 1,
+    "section": 1,
+    "question": "4"
+  },
+  {
+    "kind": "body",
+    "text": "pc2 tiene una ruta directa a 202.72.0.0/24 y alcanza r3(eth1). pc4 tiene una ruta directa a 200.72.0.0/24 y alcanza pc1 y r3(eth0). Todavía no tienen rutas a otras subredes.",
+    "top": 322.08496384452144,
+    "bottom": 343.5839872195214,
+    "page": 1,
+    "section": 1
+  },
+  {
+    "kind": "question",
+    "text": "Pregunta 5. Tabla de r3:",
+    "top": 351.0830038445215,
+    "bottom": 361.0830035945215,
+    "page": 1,
+    "section": 1,
+    "question": "5"
+  },
+  {
+    "kind": "body",
+    "text": "r3 tiene 200.72.0.0/24 por eth0 y 202.72.0.0/24 por eth1. Puede enviar directamente a pc1, pc4 y pc2. Para completar un ping, el destinatario también necesita una ruta de vuelta.",
+    "top": 369.5820338445215,
+    "bottom": 391.0810572195215,
+    "page": 1,
+    "section": 1
+  },
+  {
+    "kind": "question",
+    "text": "Pregunta 6. Ping a pc4 y r3(eth0):",
+    "top": 398.5800738445215,
+    "bottom": 408.5800735945215,
+    "page": 1,
+    "section": 1,
+    "question": "6"
+  },
+  {
+    "kind": "body",
+    "text": "Ambos deben funcionar. pc1 utiliza su ruta directa a 200.72.0.0/24 y los destinatarios responden por su ruta hacia la misma subred.",
+    "top": 417.0791038445215,
+    "bottom": 438.5781272195215,
+    "page": 1,
+    "section": 1
+  },
+  {
+    "kind": "question",
+    "text": "Pregunta 7. Ping a pc2 y r3(eth1) sin gateway:",
+    "top": 446.0771538445215,
+    "bottom": 456.07715359452146,
+    "page": 1,
+    "section": 1,
+    "question": "7"
+  },
+  {
+    "kind": "body",
+    "text": "Con las tablas iniciales, ambos deberían fallar porque pc1 no tiene ruta a 202.72.0.0/24 ni ruta por defecto. Lo habitual es obtener Network is unreachable.",
+    "top": 464.5761738445215,
+    "bottom": 486.0751972195215,
+    "page": 1,
+    "section": 1
+  },
+  {
+    "kind": "question",
+    "text": "Pregunta 9. Nuevo ping a r3(eth1):",
+    "top": 493.5742238445215,
+    "bottom": 503.57422359452147,
+    "page": 1,
+    "section": 1,
+    "question": "9"
+  },
+  {
+    "kind": "body",
+    "text": "Debe funcionar. pc1 usa la ruta por defecto y r3 reconoce 202.72.0.3 como una dirección propia. La respuesta vuelve por la ruta directa de r3 a 200.72.0.0/24.",
+    "top": 512.0732438445216,
+    "bottom": 533.5722672195216,
+    "page": 1,
+    "section": 1
+  },
+  {
+    "kind": "question",
+    "text": "Pregunta 10. Nuevo ping a pc2:",
+    "top": 541.0712938445215,
+    "bottom": 551.0712935945214,
+    "page": 1,
+    "section": 1,
+    "question": "10"
+  },
+  {
+    "kind": "body",
+    "text": "La petición debería llegar por pc1 -> r3 -> pc2, pero pc2 no sabría devolver la respuesta a 200.72.0.10. Por tanto, el ping debería fallar por falta de ruta de retorno.",
+    "top": 559.5703138445215,
+    "bottom": 581.0693372195215,
+    "page": 1,
+    "section": 1
+  },
+  {
+    "kind": "question",
+    "text": "Pregunta 11. Rutas necesarias:",
+    "top": 588.5683638445215,
+    "bottom": 598.5683635945215,
+    "page": 1,
+    "section": 1,
+    "question": "11"
+  },
+  {
+    "kind": "body",
+    "text": "Además de la ruta de pc1, se añaden estas rutas:",
+    "top": 607.0673838445215,
+    "bottom": 617.0673835945215,
+    "page": 1,
+    "section": 1
+  },
+  {
+    "kind": "body",
+    "text": "En pc2: route add default gw 202.72.0.3",
+    "top": 624.5664038445215,
+    "bottom": 634.5664035945215,
+    "page": 1,
+    "section": 1
+  },
+  {
+    "kind": "body",
+    "text": "En pc4: route add default gw 200.72.0.3",
+    "top": 642.0654338445215,
+    "bottom": 652.0654335945214,
+    "page": 1,
+    "section": 1
+  },
+  {
+    "kind": "body",
+    "text": "Con el reenvío IP activo en r3, deberían funcionar pc1 <-> pc2 y pc4 <-> pc2.",
+    "top": 659.5644538445215,
+    "bottom": 669.5644535945214,
+    "page": 1,
+    "section": 1
+  },
+  {
+    "kind": "question",
+    "text": "Pregunta 12. Ping desde pc2:",
+    "top": 677.0634738445215,
+    "bottom": 687.0634735945214,
+    "page": 1,
+    "section": 1,
+    "question": "12"
+  },
+  {
+    "kind": "body",
+    "text": "Debe funcionar hacia pc1 y pc4. pc2 utiliza r3 como gateway y ambos destinatarios tienen una ruta de vuelta por r3.",
+    "top": 695.5625038445215,
+    "bottom": 717.0615272195215,
+    "page": 1,
+    "section": 1
+  },
+  {
+    "kind": "question",
+    "text": "Pregunta 13. Cachés ARP esperadas después del ping de pc1 a pc4:",
+    "top": 724.5605438445215,
+    "bottom": 734.5605435945215,
+    "page": 1,
+    "section": 1,
+    "question": "13"
+  },
+  {
+    "kind": "body",
+    "text": "Con las cachés inicialmente vacías, pc1 aprende la MAC de pc4 y pc4 aprende la de pc1 a partir de su solicitud ARP. pc2 y r3 no necesitan nuevas asociaciones.",
+    "top": 743.0595738445215,
+    "bottom": 764.5585972195215,
+    "page": 1,
+    "section": 1
+  },
+  {
+    "kind": "question",
+    "text": "Pregunta 14. Análisis esperado del ping local:",
+    "top": 73.4990238445215,
+    "bottom": 83.49902359452153,
+    "page": 2,
+    "section": 1,
+    "question": "14"
+  },
+  {
+    "kind": "body",
+    "text": "M1 representa la MAC de pc1(eth0) y M4 la MAC de pc4(eth0).",
+    "top": 90.99804684452147,
+    "bottom": 100.9980465945215,
+    "page": 2,
+    "section": 1
+  },
+  {
+    "kind": "body",
+    "text": "Solicitud ARP: Ethernet M1 -> ff:ff:ff:ff:ff:ff; tipo 0x0806. El campo Target IP address contiene 200.72.0.40.",
+    "top": 108.49707084452155,
+    "bottom": 129.99609421952152,
+    "page": 2,
+    "section": 1
+  },
+  {
+    "kind": "body",
+    "text": "Respuesta ARP: Ethernet M4 -> M1; tipo 0x0806. El campo Sender MAC address contiene la MAC solicitada, M4.",
+    "top": 137.49511784452147,
+    "bottom": 158.99414121952145,
+    "page": 2,
+    "section": 1
+  },
+  {
+    "kind": "body",
+    "text": "Echo request: Ethernet M1 -> M4; tipo 0x0800; IP 200.72.0.10 -> 200.72.0.40; TTL esperado 64.",
+    "top": 166.49316484452152,
+    "bottom": 176.49316459452155,
+    "page": 2,
+    "section": 1
+  },
+  {
+    "kind": "body",
+    "text": "Echo reply: Ethernet M4 -> M1; tipo 0x0800; IP 200.72.0.40 -> 200.72.0.10; TTL esperado 64.",
+    "top": 183.9921838445215,
+    "bottom": 193.99218359452152,
+    "page": 2,
+    "section": 1
+  },
+  {
+    "kind": "body",
+    "text": "ARP no contiene cabecera IP. Los mensajes ICMP conservan el TTL porque no atraviesan routers.",
+    "top": 201.49121384452144,
+    "bottom": 211.49121359452147,
+    "page": 2,
+    "section": 1
+  },
+  {
+    "kind": "question",
+    "text": "Pregunta 15. Capturas y ARP entre pc1 y pc2:",
+    "top": 218.99023384452153,
+    "bottom": 228.99023359452156,
+    "page": 2,
+    "section": 1,
+    "question": "15"
+  },
+  {
+    "kind": "table",
+    "rows": [
+      [
+        "Máquina",
+        "Asociaciones ARP esperadas"
+      ],
+      [
+        "pc1",
+        "200.72.0.3 -> MAC de r3(eth0)"
+      ],
+      [
+        "pc2",
+        "202.72.0.3 -> MAC de r3(eth1)"
+      ],
+      [
+        "r3",
+        "200.72.0.10 -> M1; 202.72.0.20 -> MAC de pc2"
+      ],
+      [
+        "pc4",
+        "Ninguna nueva por este ping"
+      ]
+    ],
+    "top": 235.8268185475,
+    "bottom": 340.49999925,
+    "page": 2,
+    "section": 1
+  },
+  {
+    "kind": "body",
+    "text": "Cada PC resuelve la MAC de su gateway, no la del destino remoto. Si quedan entradas de la prueba anterior, pc4 puede conservar la asociación de pc1.",
+    "top": 360.7382838445215,
+    "bottom": 382.2373072195215,
+    "page": 2,
+    "section": 1
+  },
+  {
+    "kind": "question",
+    "text": "Pregunta 16. Ethernet y TTL en ambos segmentos:",
+    "top": 389.7363238445215,
+    "bottom": 399.7363235945215,
+    "page": 2,
+    "section": 1,
+    "question": "16"
+  },
+  {
+    "kind": "body",
+    "text": "M2 es la MAC de pc2; R30 y R31 son las MAC de r3(eth0) y r3(eth1).",
+    "top": 408.2353538445215,
+    "bottom": 418.2353535945215,
+    "page": 2,
+    "section": 1
+  },
+  {
+    "kind": "table",
+    "rows": [
+      [
+        "Captura",
+        "Mensaje",
+        "Ethernet",
+        "TTL esperado"
+      ],
+      [
+        "p3-a-02",
+        "Petición",
+        "M1 -> R30",
+        "64"
+      ],
+      [
+        "p3-a-03",
+        "Petición",
+        "R31 -> M2",
+        "63"
+      ],
+      [
+        "p3-a-03",
+        "Respuesta",
+        "M2 -> R31",
+        "64"
+      ],
+      [
+        "p3-a-02",
+        "Respuesta",
+        "R30 -> M1",
+        "63"
+      ]
+    ],
+    "top": 424.2882796885,
+    "bottom": 529.49999425,
+    "page": 2,
+    "section": 1
+  },
+  {
+    "kind": "body",
+    "text": "La petición mantiene IP origen 200.72.0.10 y destino 202.72.0.20; la respuesta las intercambia. El tipo Ethernet es 0x0800. Se reconoce el mismo datagrama por sus IP y los identificadores IP e ICMP. Al reenviar, r3 cambia las MAC, reduce el TTL y actualiza la suma de comprobación IP.",
+    "top": 548.9834038445215,
+    "bottom": 581.9814504695214,
+    "page": 2,
+    "section": 1
+  },
+  {
+    "kind": "body",
+    "text": "Los ARP de cada segmento consultan por el siguiente salto local, usan 0x0806 y sus solicitudes iniciales tienen destino Ethernet broadcast.",
+    "top": 589.4804738445215,
+    "bottom": 610.9794972195215,
+    "page": 2,
+    "section": 1
+  },
+  {
+    "kind": "section",
+    "text": "2. Configuración de tablas de encaminamiento mediante ficheros.",
+    "top": 639.277348095,
+    "bottom": 651.277348095,
+    "page": 2,
+    "section": 2
+  },
+  {
+    "kind": "question",
+    "text": "Pregunta 1. Número de subredes:",
+    "top": 659.7763638445215,
+    "bottom": 669.7763635945214,
+    "page": 2,
+    "section": 2,
+    "question": "1"
+  },
+  {
+    "kind": "body",
+    "text": "Hay cuatro subredes, todas con máscara 255.255.255.0:",
+    "top": 678.2753938445215,
+    "bottom": 688.2753935945216,
+    "page": 2,
+    "section": 2
+  },
+  {
+    "kind": "table",
+    "rows": [
+      [
+        "Subred",
+        "Interfaces conectadas"
+      ],
+      [
+        "200.72.0.0/24",
+        "pc1 eth0, pc4 eth0, r1 eth0 y r3 eth0"
+      ],
+      [
+        "201.72.0.0/24",
+        "r1 eth1 y r2 eth0"
+      ],
+      [
+        "202.72.0.0/24",
+        "pc2 eth0, r2 eth1 y r3 eth1"
+      ],
+      [
+        "203.72.0.0/24",
+        "pc3 eth0 y r2 eth2"
+      ]
+    ],
+    "top": 694.35025979,
+    "bottom": 114.500001,
+    "page": 3,
+    "section": 2
+  },
+  {
+    "kind": "question",
+    "text": "Pregunta 2. Tablas después del reinicio:",
+    "top": 139.74804684452147,
+    "bottom": 149.7480465945215,
+    "page": 3,
+    "section": 2,
+    "question": "2"
+  },
+  {
+    "kind": "body",
+    "text": "Al reiniciar deberían desaparecer las rutas añadidas con route y conservarse las rutas a las redes directamente conectadas: pc1 y pc4 a 200; pc2 a 202; pc3 a 203; r1 a 200 y 201; r2 a 201, 202 y 203; r3 a 200 y 202. Todas son redes con segundo octeto 72 y máscara /24.",
+    "top": 158.24707084452155,
+    "bottom": 191.24511746952157,
+    "page": 3,
+    "section": 2
+  },
+  {
+    "kind": "question",
+    "text": "Pregunta 3. Configuración de las rutas persistentes:",
+    "top": 198.74414384452155,
+    "bottom": 208.74414359452157,
+    "page": 3,
+    "section": 2,
+    "question": "3"
+  },
+  {
+    "kind": "body",
+    "text": "En /etc/network/interfaces se mantienen las direcciones iniciales y se añaden las siguientes líneas dentro del bloque iface indicado.",
+    "top": 217.24316384452152,
+    "bottom": 238.7421872195215,
+    "page": 3,
+    "section": 2
+  },
+  {
+    "kind": "body",
+    "text": "En pc1, bloque de eth0:",
+    "top": 246.24121384452144,
+    "bottom": 256.24121359452147,
+    "page": 3,
+    "section": 2
+  },
+  {
+    "kind": "body",
+    "text": "gateway 200.72.0.3 up route add -net 203.72.0.0 netmask 255.255.255.0 gw 200.72.0.1 down route del -net 203.72.0.0 netmask 255.255.255.0 gw 200.72.0.1",
+    "top": 263.7402338445215,
+    "bottom": 296.73828046952156,
+    "page": 3,
+    "section": 2
+  },
+  {
+    "kind": "body",
+    "text": "En pc2, bloque de eth0:",
+    "top": 305.23730384452153,
+    "bottom": 315.23730359452156,
+    "page": 3,
+    "section": 2
+  },
+  {
+    "kind": "body",
+    "text": "gateway 202.72.0.3 up route add -net 203.72.0.0 netmask 255.255.255.0 gw 202.72.0.2 down route del -net 203.72.0.0 netmask 255.255.255.0 gw 202.72.0.2",
+    "top": 322.7363238445215,
+    "bottom": 355.7343704695215,
+    "page": 3,
+    "section": 2
+  },
+  {
+    "kind": "body",
+    "text": "En pc3, bloque de eth0:",
+    "top": 364.2334038445215,
+    "bottom": 374.23340359452146,
+    "page": 3,
+    "section": 2
+  },
+  {
+    "kind": "body",
+    "text": "gateway 203.72.0.2",
+    "top": 381.7324238445215,
+    "bottom": 391.7324235945215,
+    "page": 3,
+    "section": 2
+  },
+  {
+    "kind": "body",
+    "text": "En r1, bloque de eth1:",
+    "top": 400.2314438445215,
+    "bottom": 410.23144359452147,
+    "page": 3,
+    "section": 2
+  },
+  {
+    "kind": "body",
+    "text": "up route add -net 203.72.0.0 netmask 255.255.255.0 gw 201.72.0.2 down route del -net 203.72.0.0 netmask 255.255.255.0 gw 201.72.0.2",
+    "top": 417.7304738445215,
+    "bottom": 439.2294972195215,
+    "page": 3,
+    "section": 2
+  },
+  {
+    "kind": "body",
+    "text": "En r2, bloque de eth1:",
+    "top": 447.7285138445215,
+    "bottom": 457.7285135945215,
+    "page": 3,
+    "section": 2
+  },
+  {
+    "kind": "body",
+    "text": "up route add -net 200.72.0.0 netmask 255.255.255.0 gw 202.72.0.3 down route del -net 200.72.0.0 netmask 255.255.255.0 gw 202.72.0.3",
+    "top": 465.2275438445215,
+    "bottom": 486.7265672195215,
+    "page": 3,
+    "section": 2
+  },
+  {
+    "kind": "body",
+    "text": "r3 no necesita rutas adicionales. Las rutas específicas tienen prioridad sobre la ruta por defecto. Tras aplicar la configuración y comprobar route -n, los caminos deben ser:",
+    "top": 495.2255838445215,
+    "bottom": 516.7246072195214,
+    "page": 3,
+    "section": 2
+  },
+  {
+    "kind": "body",
+    "text": "3a: pc1 -> r3 -> pc2 y pc2 -> r3 -> pc1.",
+    "top": 524.2236338445215,
+    "bottom": 534.2236335945215,
+    "page": 3,
+    "section": 2
+  },
+  {
+    "kind": "body",
+    "text": "3b: pc2 -> r2 -> pc3 y pc3 -> r2 -> pc2.",
+    "top": 541.7226538445215,
+    "bottom": 551.7226535945215,
+    "page": 3,
+    "section": 2
+  },
+  {
+    "kind": "body",
+    "text": "3c: pc1 -> r1 -> r2 -> pc3 y pc3 -> r2 -> r3 -> pc1.",
+    "top": 559.2216838445215,
+    "bottom": 569.2216835945214,
+    "page": 3,
+    "section": 2
+  },
+  {
+    "kind": "body",
+    "text": "Los routers deben tener net.ipv4.ip_forward = 1.",
+    "top": 576.7207038445215,
+    "bottom": 586.7207035945215,
+    "page": 3,
+    "section": 2
+  },
+  {
+    "kind": "question",
+    "text": "Pregunta 4. Traceroute entre pc1 y pc2:",
+    "top": 594.2197238445215,
+    "bottom": 604.2197235945214,
+    "page": 3,
+    "section": 2,
+    "question": "4"
+  },
+  {
+    "kind": "body",
+    "text": "La ida debe mostrar r3 y pc2; la vuelta, r3 y pc1. Hay un router intermedio en cada sentido.",
+    "top": 612.7187538445215,
+    "bottom": 622.7187535945216,
+    "page": 3,
+    "section": 2
+  },
+  {
+    "kind": "question",
+    "text": "Pregunta 5. Traceroute entre pc2 y pc3:",
+    "top": 630.2177738445215,
+    "bottom": 640.2177735945215,
+    "page": 3,
+    "section": 2,
+    "question": "5"
+  },
+  {
+    "kind": "body",
+    "text": "La ida debe mostrar r2 y pc3; la vuelta, r2 y pc2.",
+    "top": 648.7167938445215,
+    "bottom": 658.7167935945215,
+    "page": 3,
+    "section": 2
+  },
+  {
+    "kind": "question",
+    "text": "Pregunta 7a. Mensajes de ida y vuelta del ping:",
+    "top": 666.2158238445215,
+    "bottom": 676.2158235945215,
+    "page": 3,
+    "section": 2,
+    "question": "7a"
+  },
+  {
+    "kind": "body",
+    "text": "La petición tiene IP origen 200.72.0.10, destino 203.72.0.30 e ICMP tipo 8, código 0. La respuesta intercambia las IP y usa ICMP tipo 0, código 0. En ambos casos, el campo Protocolo de IP vale 1, ICMP.",
+    "top": 684.7148438445215,
+    "bottom": 717.7128904695215,
+    "page": 3,
+    "section": 2
+  },
+  {
+    "kind": "question",
+    "text": "Pregunta 7b. Capturas donde aparece cada sentido:",
+    "top": 73.4990238445215,
+    "bottom": 83.49902359452153,
+    "page": 4,
+    "section": 2,
+    "question": "7b"
+  },
+  {
+    "kind": "table",
+    "rows": [
+      [
+        "Captura",
+        "Interfaz",
+        "Mensajes esperados"
+      ],
+      [
+        "p3-b-01.cap",
+        "r1 eth0",
+        "Ida y vuelta"
+      ],
+      [
+        "p3-b-02.cap",
+        "r2 eth0",
+        "Ida"
+      ],
+      [
+        "p3-b-03.cap",
+        "r3 eth1",
+        "Vuelta"
+      ],
+      [
+        "p3-b-04.cap",
+        "pc3 eth0",
+        "Ida y vuelta"
+      ]
+    ],
+    "top": 90.49926714063184,
+    "bottom": 195.49999574999993,
+    "page": 4,
+    "section": 2
+  },
+  {
+    "kind": "body",
+    "text": "Con las rutas propuestas, la ida pasaría por r1 y r2; la vuelta, por r2 y r3. r1(eth0) también podría ver la vuelta al capturar en modo promiscuo, porque comparte hub con pc1 y r3. Eso no significa que la respuesta se encamine por r1.",
+    "top": 215.24707384452154,
+    "bottom": 248.24512046952157,
+    "page": 4,
+    "section": 2
+  },
+  {
+    "kind": "question",
+    "text": "Pregunta 7c. TTL de los datagramas:",
+    "top": 255.74414384452155,
+    "bottom": 265.7441435945216,
+    "page": 4,
+    "section": 2,
+    "question": "7c"
+  },
+  {
+    "kind": "table",
+    "rows": [
+      [
+        "Captura",
+        "TTL esperado de petición",
+        "TTL esperado de respuesta"
+      ],
+      [
+        "p3-b-01.cap",
+        "64",
+        "62"
+      ],
+      [
+        "p3-b-02.cap",
+        "63",
+        "No aparece"
+      ],
+      [
+        "p3-b-03.cap",
+        "No aparece",
+        "63"
+      ],
+      [
+        "p3-b-04.cap",
+        "62",
+        "64"
+      ]
+    ],
+    "top": 272.68310484250003,
+    "bottom": 377.500003,
+    "page": 4,
+    "section": 2
+  },
+  {
+    "kind": "body",
+    "text": "Cada router resta uno al TTL. La petición cruza dos routers y la respuesta también, aunque por caminos diferentes. Se esperan dos peticiones y dos respuestas por el ping -c 2.",
+    "top": 397.4921838445215,
+    "bottom": 418.99120721952147,
+    "page": 4,
+    "section": 2
+  },
+  {
+    "kind": "question",
+    "text": "Pregunta 8. Recorrido del traceroute capturado:",
+    "top": 426.4902338445215,
+    "bottom": 436.4902335945215,
+    "page": 4,
+    "section": 2,
+    "question": "8"
+  },
+  {
+    "kind": "body",
+    "text": "Las sondas que llegan a pc3 pasan por r1 y r2. Las respuestas ICMP pueden regresar por rutas diferentes.",
+    "top": 444.9892538445215,
+    "bottom": 466.4882772195215,
+    "page": 4,
+    "section": 2
+  },
+  {
+    "kind": "question",
+    "text": "Pregunta 9. Identificación de los paquetes:",
+    "top": 473.9873038445215,
+    "bottom": 483.98730359452145,
+    "page": 4,
+    "section": 2,
+    "question": "9"
+  },
+  {
+    "kind": "body",
+    "text": "Con traceroute UDP y tres sondas por salto se esperan los siguientes grupos:",
+    "top": 491.4863238445215,
+    "bottom": 501.4863235945215,
+    "page": 4,
+    "section": 2
+  },
+  {
+    "kind": "body",
+    "text": "Sondas con TTL inicial 1: tres UDP; se ven en p3-b-05 con TTL 1.",
+    "top": 508.9853538445215,
+    "bottom": 518.9853535945215,
+    "page": 4,
+    "section": 2
+  },
+  {
+    "kind": "body",
+    "text": "Respuestas de r1: tres ICMP tipo 11, código 0; se ven en p3-b-05.",
+    "top": 526.4843738445215,
+    "bottom": 536.4843735945215,
+    "page": 4,
+    "section": 2
+  },
+  {
+    "kind": "body",
+    "text": "Sondas con TTL inicial 2: tres UDP; TTL 2 en p3-b-05 y 1 en p3-b-06.",
+    "top": 561.4824238445215,
+    "bottom": 571.4824235945214,
+    "page": 4,
+    "section": 2
+  },
+  {
+    "kind": "body",
+    "text": "Respuestas de r2: tres ICMP tipo 11, código 0; se ven en p3-b-07 y p3-b-05.",
+    "top": 578.9814438445214,
+    "bottom": 588.9814435945216,
+    "page": 4,
+    "section": 2
+  },
+  {
+    "kind": "body",
+    "text": "Sondas con TTL inicial 3: tres UDP; TTL 3 en p3-b-05, 2 en p3-b-06 y 1 en p3-b-08.",
+    "top": 613.9794938445215,
+    "bottom": 623.9794935945215,
+    "page": 4,
+    "section": 2
+  },
+  {
+    "kind": "body",
+    "text": "Respuestas de pc3: tres ICMP tipo 3, código 3; se ven en p3-b-08, p3-b-07 y p3-b-05.",
+    "top": 631.4785138445216,
+    "bottom": 641.4785135945215,
+    "page": 4,
+    "section": 2
+  },
+  {
+    "kind": "body",
+    "text": "Las sondas llevan Protocolo IP = 17, UDP; los errores llevan Protocolo IP = 1, ICMP. El error ICMP incluye parte de la sonda original para poder relacionarlos.",
+    "top": 666.4765638445215,
+    "bottom": 687.9755872195215,
+    "page": 4,
+    "section": 2
+  },
+  {
+    "kind": "question",
+    "text": "Pregunta 10a. Ruta de las sondas:",
+    "top": 695.4746138445215,
+    "bottom": 705.4746135945215,
+    "page": 4,
+    "section": 2,
+    "question": "10a"
+  },
+  {
+    "kind": "body",
+    "text": "Siguen pc1 -> r1 -> r2 -> pc3. Las de TTL 1 caducan en r1; las de TTL 2, en r2; y las de TTL 3 llegan a pc3 con TTL 1.",
+    "top": 713.9736338445215,
+    "bottom": 735.4726572195215,
+    "page": 4,
+    "section": 2
+  },
+  {
+    "kind": "question",
+    "text": "Pregunta 10b. Ruta de los ICMP de r1:",
+    "top": 73.4990238445215,
+    "bottom": 83.49902359452153,
+    "page": 5,
+    "section": 2,
+    "question": "10b"
+  },
+  {
+    "kind": "body",
+    "text": "Vuelven directamente por r1 -> pc1. La IP origen esperada es 200.72.0.1, de eth0, la interfaz de salida hacia pc1.",
+    "top": 91.99804684452147,
+    "bottom": 113.49707021952145,
+    "page": 5,
+    "section": 2
+  },
+  {
+    "kind": "question",
+    "text": "Pregunta 10c. Ruta de los ICMP de r2:",
+    "top": 120.99609384452151,
+    "bottom": 130.99609359452154,
+    "page": 5,
+    "section": 2,
+    "question": "10c"
+  },
+  {
+    "kind": "body",
+    "text": "Vuelven por r2 -> r3 -> pc1. Con la selección habitual de origen de Linux, r2 usa 202.72.0.2, de su interfaz de salida hacia r3. Por eso traceroute puede mostrar esa IP aunque la sonda haya entrado por 201.72.0.2. La IP concreta debe confirmarse en los paquetes capturados.",
+    "top": 139.49511784452147,
+    "bottom": 172.4931644695215,
+    "page": 5,
+    "section": 2
+  },
+  {
+    "kind": "question",
+    "text": "Pregunta 10d. Ruta de los ICMP de pc3:",
+    "top": 179.9921838445215,
+    "bottom": 189.99218359452152,
+    "page": 5,
+    "section": 2,
+    "question": "10d"
+  },
+  {
+    "kind": "body",
+    "text": "Vuelven por pc3 -> r2 -> r3 -> pc1. Su origen es 203.72.0.30 y su destino 200.72.0.10. El error de puerto inalcanzable indica que la sonda llegó al destino.",
+    "top": 198.49121384452144,
+    "bottom": 219.99023721952142,
+    "page": 5,
+    "section": 2
+  }
+]

@@ -1,0 +1,7 @@
+#!/bin/sh
+
+usuario=$(whoami)
+n=$(ps aux | sed '1d' | sort -k3,3nr | head -n 10 | awk -v u="$usuario" ' $1 == u {c++} END {print c+0}')
+
+echo "El usuario, $usuario, es propietario de $n de los 10 procesos que mas consumen CPU"
+exit 0 

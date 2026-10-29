@@ -1,0 +1,20 @@
+#--- Hacer un programa que realiza la suma de fibonacci
+	
+	.text
+	
+	#-- Inicializar  las variables t0 y t1 que seran para los cálculos intermedios
+	#-- y t2 que sera donde se almacene el resultado
+	
+	li t0, 0
+	li t1, 1
+	
+bucle:
+	add t2, t0, t1
+	
+	#-- Actualizar los registros
+	
+	add t0, t1, zero #-- t0 = t1
+	add t1, t2, zero #-- t1 = t2
+	
+
+	j bucle

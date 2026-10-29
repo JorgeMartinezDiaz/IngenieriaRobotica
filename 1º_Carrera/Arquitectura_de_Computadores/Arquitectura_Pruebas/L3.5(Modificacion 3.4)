@@ -1,0 +1,33 @@
+#-- Guaradar las direcciones de las palabras en los registros
+
+	.include "servicios.asm"
+	
+	.data
+	
+VAL_a:	.word 1
+VAL_b:	.word 2
+VAL_c:	.word 3
+VAL_d:	.word 4
+
+	.text
+	
+	#-- Cargar en los registros las palabras.
+	
+	la a0, VAL_a
+	la a1, VAL_b
+	la a2, VAL_c
+	la a3, VAL_d
+	
+	#-- Inicializar los registros
+	
+	lw a5, 0(a0)
+	lw a6, 0(a1)
+	lw a7, 0(a2)
+	lw s2, 0(a3)
+	
+	
+	#.. Terminar:
+	
+	li a7, EXIT
+	ecall
+	

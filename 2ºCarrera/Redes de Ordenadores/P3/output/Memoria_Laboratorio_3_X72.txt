@@ -1,0 +1,204 @@
+﻿Memoria Laboratorio 3
+
+Alumno: Jorge Martínez Díaz
+Asignatura: Fundamentos de Redes de Ordenadores
+Fecha: 29/10/2026
+
+Mi número personal asignado es X = 72.
+
+Estado de comprobación: se han leído el enunciado y los ficheros iniciales del escenario. La IP 200.72.0.10 de pc1 y las rutas son propuestas. No se han ejecutado los dispositivos ni analizado capturas en Wireshark. Los resultados de tráfico son previsiones, con TTL inicial supuesto de 64; las MAC se representan con símbolos porque no se han medido.
+
+1. Configuración de tablas de encaminamiento con route.
+
+Pregunta 1. Ping a 127.0.0.1:
+Responde porque 127.0.0.1 pertenece a la interfaz de loopback, lo, que ya está configurada. No necesita una IP en Ethernet. Inicialmente, route -n no muestra rutas hacia otras máquinas; Linux gestiona el loopback en su tabla local.
+
+Pregunta 2. Configuración de la dirección de pc1:
+La subred es 200.72.0.0/24 y su máscara es 255.255.255.0. En /etc/network/interfaces se conserva lo y se añade:
+
+auto eth0
+iface eth0 inet static
+    address 200.72.0.10
+    netmask 255.255.255.0
+
+Se aplica con ifup eth0 y se comprueba con ifconfig eth0.
+
+Pregunta 3. Tabla de pc1 después de configurar la IP:
+Se añade automáticamente la ruta 200.72.0.0/24 por eth0, sin gateway. Con ella puede enviar a los vecinos de su subred: pc4 y r3(eth0), entre las máquinas encendidas.
+
+Pregunta 4. Tablas de pc2 y pc4:
+pc2 tiene una ruta directa a 202.72.0.0/24 y alcanza r3(eth1). pc4 tiene una ruta directa a 200.72.0.0/24 y alcanza pc1 y r3(eth0). Todavía no tienen rutas a otras subredes.
+
+Pregunta 5. Tabla de r3:
+r3 tiene 200.72.0.0/24 por eth0 y 202.72.0.0/24 por eth1. Puede enviar directamente a pc1, pc4 y pc2. Para completar un ping, el destinatario también necesita una ruta de vuelta.
+
+Pregunta 6. Ping a pc4 y r3(eth0):
+Ambos deben funcionar. pc1 utiliza su ruta directa a 200.72.0.0/24 y los destinatarios responden por su ruta hacia la misma subred.
+
+Pregunta 7. Ping a pc2 y r3(eth1) sin gateway:
+Con las tablas iniciales, ambos deberían fallar porque pc1 no tiene ruta a 202.72.0.0/24 ni ruta por defecto. Lo habitual es obtener Network is unreachable.
+
+Pregunta 8. Ruta por defecto de pc1:
+En pc1 se ejecuta:
+
+route add default gw 200.72.0.3
+
+Así, los destinos sin una ruta más específica se envían a r3.
+
+Pregunta 9. Nuevo ping a r3(eth1):
+Debe funcionar. pc1 usa la ruta por defecto y r3 reconoce 202.72.0.3 como una dirección propia. La respuesta vuelve por la ruta directa de r3 a 200.72.0.0/24.
+
+Pregunta 10. Nuevo ping a pc2:
+La petición debería llegar por pc1 -> r3 -> pc2, pero pc2 no sabría devolver la respuesta a 200.72.0.10. Por tanto, el ping debería fallar por falta de ruta de retorno.
+
+Pregunta 11. Rutas necesarias:
+Además de la ruta de pc1, se añaden estas rutas:
+
+En pc2: route add default gw 202.72.0.3
+En pc4: route add default gw 200.72.0.3
+
+Con el reenvío IP activo en r3, deberían funcionar pc1 <-> pc2 y pc4 <-> pc2.
+
+Pregunta 12. Ping desde pc2:
+Debe funcionar hacia pc1 y pc4. pc2 utiliza r3 como gateway y ambos destinatarios tienen una ruta de vuelta por r3.
+
+Pregunta 13. Cachés ARP esperadas después del ping de pc1 a pc4:
+Con las cachés inicialmente vacías, pc1 aprende la MAC de pc4 y pc4 aprende la de pc1 a partir de su solicitud ARP. pc2 y r3 no necesitan nuevas asociaciones. La captura se guarda en p3-a-01.cap, desde pc4(eth0), enviando un único ping.
+
+Pregunta 14. Análisis esperado del ping local:
+M1 representa la MAC de pc1(eth0) y M4 la MAC de pc4(eth0).
+
+Solicitud ARP: Ethernet M1 -> ff:ff:ff:ff:ff:ff; tipo 0x0806. El campo Target IP address contiene 200.72.0.40.
+Respuesta ARP: Ethernet M4 -> M1; tipo 0x0806. El campo Sender MAC address contiene la MAC solicitada, M4.
+Echo request: Ethernet M1 -> M4; tipo 0x0800; IP 200.72.0.10 -> 200.72.0.40; TTL esperado 64.
+Echo reply: Ethernet M4 -> M1; tipo 0x0800; IP 200.72.0.40 -> 200.72.0.10; TTL esperado 64.
+
+ARP no contiene cabecera IP. Los mensajes ICMP conservan el TTL porque no atraviesan routers.
+
+Pregunta 15. Capturas y ARP entre pc1 y pc2:
+Se necesitan dos capturas, una por cada segmento: p3-a-02.cap en r3(eth0) y p3-a-03.cap en pc2(eth0). Se ejecuta en pc1 un ping -c 1 202.72.0.20.
+
+Máquina | Asociaciones ARP esperadas
+pc1 | 200.72.0.3 -> MAC de r3(eth0)
+pc2 | 202.72.0.3 -> MAC de r3(eth1)
+r3 | 200.72.0.10 -> M1; 202.72.0.20 -> MAC de pc2
+pc4 | Ninguna nueva por este ping
+
+Cada PC resuelve la MAC de su gateway, no la del destino remoto. Si quedan entradas de la prueba anterior, pc4 puede conservar la asociación de pc1.
+
+Pregunta 16. Ethernet y TTL en ambos segmentos:
+M2 es la MAC de pc2; R30 y R31 son las MAC de r3(eth0) y r3(eth1).
+
+Captura | Mensaje | Ethernet | TTL esperado
+p3-a-02 | Petición | M1 -> R30 | 64
+p3-a-03 | Petición | R31 -> M2 | 63
+p3-a-03 | Respuesta | M2 -> R31 | 64
+p3-a-02 | Respuesta | R30 -> M1 | 63
+
+La petición mantiene IP origen 200.72.0.10 y destino 202.72.0.20; la respuesta las intercambia. El tipo Ethernet es 0x0800. Se reconoce el mismo datagrama por sus IP y los identificadores IP e ICMP. Al reenviar, r3 cambia las MAC, reduce el TTL y actualiza la suma de comprobación IP.
+Los ARP de cada segmento consultan por el siguiente salto local, usan 0x0806 y sus solicitudes iniciales tienen destino Ethernet broadcast.
+
+2. Configuración de tablas de encaminamiento mediante ficheros.
+
+Pregunta 1. Número de subredes:
+Hay cuatro subredes, todas con máscara 255.255.255.0:
+
+Subred | Interfaces conectadas
+200.72.0.0/24 | pc1 eth0, pc4 eth0, r1 eth0 y r3 eth0
+201.72.0.0/24 | r1 eth1 y r2 eth0
+202.72.0.0/24 | pc2 eth0, r2 eth1 y r3 eth1
+203.72.0.0/24 | pc3 eth0 y r2 eth2
+
+Pregunta 2. Tablas después del reinicio:
+Al reiniciar deberían desaparecer las rutas añadidas con route y conservarse las rutas a las redes directamente conectadas: pc1 y pc4 a 200; pc2 a 202; pc3 a 203; r1 a 200 y 201; r2 a 201, 202 y 203; r3 a 200 y 202. Todas son redes con segundo octeto 72 y máscara /24.
+
+Pregunta 3. Configuración de las rutas persistentes:
+En /etc/network/interfaces se mantienen las direcciones iniciales y se añaden las siguientes líneas dentro del bloque iface indicado.
+
+En pc1, bloque de eth0:
+    gateway 200.72.0.3
+    up route add -net 203.72.0.0 netmask 255.255.255.0 gw 200.72.0.1
+    down route del -net 203.72.0.0 netmask 255.255.255.0 gw 200.72.0.1
+
+En pc2, bloque de eth0:
+    gateway 202.72.0.3
+    up route add -net 203.72.0.0 netmask 255.255.255.0 gw 202.72.0.2
+    down route del -net 203.72.0.0 netmask 255.255.255.0 gw 202.72.0.2
+
+En pc3, bloque de eth0:
+    gateway 203.72.0.2
+
+En r1, bloque de eth1:
+    up route add -net 203.72.0.0 netmask 255.255.255.0 gw 201.72.0.2
+    down route del -net 203.72.0.0 netmask 255.255.255.0 gw 201.72.0.2
+
+En r2, bloque de eth1:
+    up route add -net 200.72.0.0 netmask 255.255.255.0 gw 202.72.0.3
+    down route del -net 200.72.0.0 netmask 255.255.255.0 gw 202.72.0.3
+
+r3 no necesita rutas adicionales. Las rutas específicas tienen prioridad sobre la ruta por defecto. Tras aplicar la configuración y comprobar route -n, los caminos deben ser:
+
+3a: pc1 -> r3 -> pc2 y pc2 -> r3 -> pc1.
+3b: pc2 -> r2 -> pc3 y pc3 -> r2 -> pc2.
+3c: pc1 -> r1 -> r2 -> pc3 y pc3 -> r2 -> r3 -> pc1.
+
+Los routers deben tener net.ipv4.ip_forward = 1.
+
+Pregunta 4. Traceroute entre pc1 y pc2:
+La ida debe mostrar r3 y pc2; la vuelta, r3 y pc1. Hay un router intermedio en cada sentido.
+
+Pregunta 5. Traceroute entre pc2 y pc3:
+La ida debe mostrar r2 y pc3; la vuelta, r2 y pc2.
+
+Pregunta 6. Traceroute entre pc1 y pc3:
+La ida sigue pc1 -> r1 -> r2 -> pc3 y la vuelta pc3 -> r2 -> r3 -> pc1. En el segundo salto de la vuelta pueden aparecer asteriscos: r3 no tiene ruta hacia pc3 para devolverle su ICMP de TTL excedido, aunque sí pueda reenviar las sondas hacia pc1.
+
+Pregunta 7a. Mensajes de ida y vuelta del ping:
+La petición tiene IP origen 200.72.0.10, destino 203.72.0.30 e ICMP tipo 8, código 0. La respuesta intercambia las IP y usa ICMP tipo 0, código 0. En ambos casos, el campo Protocolo de IP vale 1, ICMP.
+
+Pregunta 7b. Capturas donde aparece cada sentido:
+
+Captura | Interfaz | Mensajes esperados
+p3-b-01.cap | r1 eth0 | Ida y vuelta
+p3-b-02.cap | r2 eth0 | Ida
+p3-b-03.cap | r3 eth1 | Vuelta
+p3-b-04.cap | pc3 eth0 | Ida y vuelta
+
+Con las rutas propuestas, la ida pasaría por r1 y r2; la vuelta, por r2 y r3. r1(eth0) también podría ver la vuelta al capturar en modo promiscuo, porque comparte hub con pc1 y r3. Eso no significa que la respuesta se encamine por r1.
+
+Pregunta 7c. TTL de los datagramas:
+
+Captura | TTL esperado de petición | TTL esperado de respuesta
+p3-b-01.cap | 64 | 62
+p3-b-02.cap | 63 | No aparece
+p3-b-03.cap | No aparece | 63
+p3-b-04.cap | 62 | 64
+
+Cada router resta uno al TTL. La petición cruza dos routers y la respuesta también, aunque por caminos diferentes. Se esperan dos peticiones y dos respuestas por el ping -c 2.
+
+Pregunta 8. Recorrido del traceroute capturado:
+Las sondas que llegan a pc3 pasan por r1 y r2. Las respuestas ICMP pueden regresar por rutas diferentes. Las nuevas capturas son p3-b-05.cap, p3-b-06.cap, p3-b-07.cap y p3-b-08.cap.
+
+Pregunta 9. Identificación de los paquetes:
+Con traceroute UDP y tres sondas por salto se esperan los siguientes grupos:
+
+Sondas con TTL inicial 1: tres UDP; se ven en p3-b-05 con TTL 1.
+Respuestas de r1: tres ICMP tipo 11, código 0; se ven en p3-b-05.
+Sondas con TTL inicial 2: tres UDP; TTL 2 en p3-b-05 y 1 en p3-b-06.
+Respuestas de r2: tres ICMP tipo 11, código 0; se ven en p3-b-07 y p3-b-05.
+Sondas con TTL inicial 3: tres UDP; TTL 3 en p3-b-05, 2 en p3-b-06 y 1 en p3-b-08.
+Respuestas de pc3: tres ICMP tipo 3, código 3; se ven en p3-b-08, p3-b-07 y p3-b-05.
+
+Las sondas llevan Protocolo IP = 17, UDP; los errores llevan Protocolo IP = 1, ICMP. El error ICMP incluye parte de la sonda original para poder relacionarlos.
+
+Pregunta 10a. Ruta de las sondas:
+Siguen pc1 -> r1 -> r2 -> pc3. Las de TTL 1 caducan en r1; las de TTL 2, en r2; y las de TTL 3 llegan a pc3 con TTL 1.
+
+Pregunta 10b. Ruta de los ICMP de r1:
+Vuelven directamente por r1 -> pc1. La IP origen esperada es 200.72.0.1, de eth0, la interfaz de salida hacia pc1.
+
+Pregunta 10c. Ruta de los ICMP de r2:
+Vuelven por r2 -> r3 -> pc1. Con la selección habitual de origen de Linux, r2 usa 202.72.0.2, de su interfaz de salida hacia r3. Por eso traceroute puede mostrar esa IP aunque la sonda haya entrado por 201.72.0.2. La IP concreta debe confirmarse en los paquetes capturados.
+
+Pregunta 10d. Ruta de los ICMP de pc3:
+Vuelven por pc3 -> r2 -> r3 -> pc1. Su origen es 203.72.0.30 y su destino 200.72.0.10. El error de puerto inalcanzable indica que la sonda llegó al destino.

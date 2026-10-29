@@ -1,0 +1,30 @@
+#-- Programa para mostrar por el Display Derecho
+#-- Un tres.
+#-- Tiene un bucle infinito al final como modificacion del L4.6
+	.include "servicios.asm"
+	
+	#-- Variables:
+	
+	.eqv DISP_D 0xFFFF0010
+	.eqv TRES 0x4F
+	
+	.eqv ON 0xFF
+	.eqv OFF 0x00
+	
+#-- Codigo: 
+
+	.text
+	
+	li t0, DISP_D #--Puntero al display
+	li t1, TRES   #--Valor
+	
+	sw t1, 0(t0)  #-- Guardar el valor 
+	
+bucle:
+	li s1, ON
+	li a1, OFF
+	
+	sw s1, 0(t0)
+	sw a1, 0(t0)
+	
+	j bucle

@@ -1,0 +1,51 @@
+#-- Programa para calcular la expresión
+#-- f = (d - c) + 15 - (a + b)
+
+	.include "servicios.asm"
+	
+	.data 
+	
+	.eqv VAL_a 1
+	.eqv VAL_b 2
+	.eqv VAL_c 3
+	.eqv VAL_d 4
+
+#-- Programa principal:
+
+	.text 
+	
+	#-- Inicializar las variables:
+	
+	li t0, VAL_a
+	li t1, VAL_b
+	li t2, VAL_c
+	li t3, VAL_d
+	li t4, 0
+
+bucle:
+	#-- Operaciones:
+	sub s0, t3, t2 #-- En s0 esta (d - c)
+	
+	addi s0, s0, 15 #-- En s0 esta (d - c) + 15
+	
+	add a1, t0, t1 #-- En a1 esta (a + b)
+	
+	sub t4, s0, a1
+	
+	#--Mostrar por pantalla
+	mv a0, t4
+	li a7, PRINT_INT
+	ecall
+
+	#-- Imprimir espacio entre numero y numero
+	li a7, PRINT_CHAR
+	li a0, ' '
+	ecall
+	
+	#-- Incrementar variables.
+	addi t0, t0, 1	
+	addi t1, t1, 1
+	addi t2, t2, 1
+	addi t3, t3, 1
+	
+	j bucle
